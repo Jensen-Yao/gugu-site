@@ -1,0 +1,51 @@
+async page => {
+  const base = page.url().replace(/[?#].*$/, '')
+  if (!/^https?:\/\/(?:127\.0\.0\.1:8797|jensen-yao\.github\.io)\/gugu-site\//i.test(base)) throw Error('Use the GUGU product website')
+  const checks = [], errors = [], badResources = []
+  const check = (value, name) => { if (!value) throw Error(name); checks.push(name) }
+  page.on('pageerror', error => errors.push(error.message))
+  page.on('response', response => { if (response.url().startsWith(new URL(base).origin) && response.status() >= 400 && !response.url().endsWith('/favicon.ico')) badResources.push({ url: response.url(), status: response.status() }) })
+  await page.setViewportSize({ width: 1440, height: 1000 })
+  await page.goto(base)
+  await page.evaluate(() => document.fonts.ready)
+  check(await page.getByRole('heading', { level: 1 }).count() === 1, 'one clear product heading')
+  check((await page.locator('body').innerText()).includes('交互示意 · 非实时行情'), 'sample data is disclosed')
+  const firstChart = await page.locator('#market-chart').innerHTML()
+  await page.getByRole('button', { name: '周K', exact: true }).click()
+  check((await page.locator('#market-chart').innerHTML()) !== firstChart, 'period control changes the demonstration chart')
+  check(await page.getByRole('button', { name: '周K', exact: true }).getAttribute('aria-pressed') === 'true', 'period selection is accessible')
+  await page.getByRole('tab', { name: '策略实验', exact: true }).click()
+  check(await page.getByRole('tabpanel', { name: '策略实验', exact: true }).isVisible(), 'strategy preview tab works')
+  check(!await page.getByRole('tabpanel', { name: '图表终端', exact: true }).isVisible(), 'inactive preview is hidden')
+  await page.getByRole('tab', { name: '策略实验', exact: true }).press('ArrowRight')
+  check(await page.getByRole('tab', { name: '智能体协作', exact: true }).getAttribute('aria-selected') === 'true', 'keyboard navigation changes preview tabs')
+  await page.getByRole('tabpanel', { name: '智能体协作', exact: true }).getByText('查看研究阶段', { exact: true }).click()
+  check(await page.getByText('核实数据 → 明确假设 → 设计实验 → 复核证据。', { exact: false }).isVisible(), 'agent process disclosure expands')
+  await page.getByRole('tab', { name: '图表终端', exact: true }).click()
+  await page.getByRole('button', { name: '日K', exact: true }).click()
+  for (const width of [1440, 1280, 760, 390, 375, 320]) {
+    await page.setViewportSize({ width, height: 1000 })
+    for (const name of ['图表终端', '策略实验', '智能体协作']) {
+      await page.getByRole('tab', { name, exact: true }).click()
+      const dimensions = await page.evaluate(() => ({ width: innerWidth, scroll: document.documentElement.scrollWidth }))
+      check(dimensions.scroll <= dimensions.width, `${width}px ${name} has no horizontal overflow`)
+    }
+    await page.getByRole('tab', { name: '图表终端', exact: true }).click()
+    if ([1440, 390].includes(width)) await page.screenshot({ path: `output/playwright/product-site-${width}.png`, fullPage: true })
+  }
+  await page.getByText('现在提供的是哪种软件？', { exact: false }).click()
+  check(await page.getByText('Electron 桌面端。桌面端复用同一界面和本地后端，可从源码生成 Windows NSIS 安装包；公开下载站尚未发布。', { exact: false }).isVisible(), 'software format is stated accurately')
+  await page.getByRole('button', { name: '复制启动命令', exact: true }).click()
+  check(/已复制|已选中/.test(await page.locator('#copy-install').innerText()), 'installation command copy has a visible result')
+  check((await page.locator('#install-code').innerText()).includes('pnpm install --frozen-lockfile'), 'setup uses locked dependencies')
+  const anchors = await page.locator('a[href^="#"]').evaluateAll(links => links.map(link => link.getAttribute('href')).filter(href => href.length > 1))
+  check(await page.evaluate(ids => ids.every(id => document.getElementById(id.slice(1))), anchors), 'all internal navigation anchors resolve')
+  const body = await page.locator('body').innerText()
+  check(!/pandaai|pandasai/i.test(body), 'public copy uses only the product brand')
+  check(!await page.locator('input[type="password"],input[name*="key"],form').count(), 'showcase does not collect credentials')
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  check(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior) === 'auto', 'reduced motion is respected')
+  check(badResources.length === 0, 'all same-origin assets load under the GitHub Pages subpath')
+  check(errors.length === 0, 'no uncaught JavaScript errors')
+  return { base, checks, errors, badResources }
+}
