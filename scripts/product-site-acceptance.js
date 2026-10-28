@@ -34,7 +34,7 @@ async page => {
     if ([1440, 390].includes(width)) await page.screenshot({ path: `output/playwright/product-site-${width}.png`, fullPage: true })
   }
   await page.getByText('现在提供的是哪种软件？', { exact: false }).click()
-  check(await page.getByText('Electron 桌面端。桌面端复用同一界面和本地后端，可从源码生成 Windows NSIS 安装包；公开下载站尚未发布。', { exact: false }).isVisible(), 'software format is stated accurately')
+  check(await page.getByText('Electron 桌面端，以及 Android 原生端。桌面端复用同一界面和本地后端；Android 端内置公开行情、本地模拟炒股、研究、学堂与工具，不需要填写服务地址。', { exact: false }).isVisible(), 'software format is stated accurately')
   await page.getByRole('button', { name: '复制启动命令', exact: true }).click()
   check(/已复制|已选中/.test(await page.locator('#copy-install').innerText()), 'installation command copy has a visible result')
   check((await page.locator('#install-code').innerText()).includes('pnpm install --frozen-lockfile'), 'setup uses locked dependencies')
