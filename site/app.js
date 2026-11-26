@@ -71,9 +71,9 @@ const copyButton = document.querySelector('#copy-install')
 copyButton.addEventListener('click', async () => {
   const status = document.querySelector('#copy-status')
   try {
-    await navigator.clipboard.writeText(document.querySelector('#install-code').textContent.trim())
     copyButton.textContent = '已复制 ✓'
     status.textContent = '启动命令已复制到剪贴板。'
+    await navigator.clipboard.writeText(document.querySelector('#install-code').textContent.trim())
     setTimeout(() => { copyButton.textContent = '复制命令 ▢' }, 2200)
   } catch {
     const range = document.createRange()
