@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f7f4">
+  <meta name="description" content="GuGu ai 交互演示：市场阶段、策略选股、监控信号、仿真盘和命令面板。使用固定示例数据。">
+  <title>GuGu ai · 交互演示</title>
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="demo.css">
+  <script src="demo.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#demo-main">跳到演示正文</a>
+  <svg class="svg-sprite" aria-hidden="true"><defs>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M7 15l4-5 3 3 5-7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M9 4v5l-5 9.2A1.6 1.6 0 0 0 5.4 21h13.2a1.6 1.6 0 0 0 1.4-2.8L15 9V4M7.5 15h9"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7.5A1.5 1.5 0 0 1 5.5 6h13A1.5 1.5 0 0 1 20 7.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 16.5v-9ZM16 12h2M4 10h16"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6ZM10 19a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m10 4 1.5 4L15.5 9.5l-4 1.5L10 15l-1.5-4L4.5 9.5 8.5 8 10 4ZM18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9L18 14Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4"/></symbol>
+    <symbol id="i-command" viewBox="0 0 24 24"><path d="M9 6.5A2.5 2.5 0 1 0 6.5 9H9v6H6.5a2.5 2.5 0 1 0 2.5 2.5V19h6v1.5a2.5 2.5 0 1 0 2.5-2.5H15V9h2.5A2.5 2.5 0 1 0 15 6.5V5H9v1.5Z"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 8 4.5-8 4.5-8-4.5L12 3ZM4 12l8 4.5 8-4.5M4 16.5 12 21l8-4.5"/></symbol>
+  </defs></svg>
+
+  <header class="demo-header">
+    <a class="demo-brand" href="index.html" aria-label="返回 GuGu ai 官网"><img src="assets/logo.png" width="28" height="28" alt=""><span>GUGU<span>ai</span></span></a>
+    <nav class="demo-nav" aria-label="演示导航">
+      <a href="#market" data-nav="market">市场</a>
+      <a href="#screener" data-nav="screener">选股</a>
+      <a href="#monitor" data-nav="monitor">监控</a>
+      <a href="#paper" data-nav="paper">仿真</a>
+      <a href="#review" data-nav="review">复盘</a>
+    </nav>
+    <div class="demo-header-actions">
+      <button class="command-trigger" type="button" data-command-open><svg><use href="#i-search"/></svg><span>搜索与命令</span><kbd>Ctrl K</kbd></button>
+      <button class="icon-button" type="button" data-theme-toggle aria-label="切换深浅主题" title="切换深浅主题"><svg class="theme-sun"><use href="#i-sun"/></svg><svg class="theme-moon"><use href="#i-command"/></svg></button>
+      <a class="demo-github" href="https://github.com/Jensen-Yao/gugu" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    </div>
+  </header>
+
+  <main id="demo-main" class="demo-main">
+    <section class="demo-hero" aria-labelledby="demo-title">
+      <div>
+        <div class="demo-eyebrow"><span class="live-dot"></span> RESEARCH COCKPIT / PUBLIC SNAPSHOT DEMO</div>
+        <h1 id="demo-title">研究驾驶舱</h1>
+        <p>把市场阶段、主线、选股、监控和仿真放在一张桌面上。以下为固定示例数据，不是实时行情。</p>
+      </div>
+      <div class="demo-hero-meta"><span>2026-11-27 · 15:00</span><span>公开快照 · 可能延迟</span><button class="primary-button" type="button" data-command-open>开始一次研究 <svg><use href="#i-arrow"/></svg></button></div>
+    </section>
+
+    <section id="market" class="demo-section" aria-labelledby="market-title">
+      <div class="section-heading"><div><span class="section-index">01</span><h2 id="market-title">市场</h2></div><p>先看环境，再决定研究什么。</p></div>
+      <div class="demo-grid market-grid">
+        <article class="demo-card phase-card">
+          <div class="card-head"><span>市场阶段</span><small>四维观察 · 不是交易信号</small></div>
+          <div class="phase-score"><span class="phase-pill">结构性强</span><b>62</b><small>/ 100</small></div>
+          <div class="phase-bars">
+            <div><span>趋势</span><i><em style="width:58%"></em></i><b>58</b></div>
+            <div><span>宽度</span><i><em style="width:53%"></em></i><b>53</b></div>
+            <div><span>情绪</span><i><em style="width:49%"></em></i><b>49</b></div>
+            <div><span>流动性</span><i><em style="width:50%"></em></i><b>50</b></div>
+          </div>
+          <p>指数在 20 日线附近震荡，结构性机会集中在少数方向。</p>
+        </article>
+
+        <article class="demo-card chart-card">
+          <div class="card-head"><span>上证指数 · 日K</span><div class="segmented" role="group" aria-label="示例周期"><button class="selected" type="button" data-demo-period="1d">日K</button><button type="button" data-demo-period="1w">周K</button><button type="button" data-demo-period="1M">月K</button></div></div>
+          <div class="chart-wrap"><svg id="demo-chart" viewBox="0 0 760 260" role="img" aria-label="上证指数示例K线"></svg></div>
+          <div class="chart-legend"><span><i class="red"></i>红涨</span><span><i class="green"></i>绿跌</span><span>MA20 3,604.64</span><span>MA60 3,688.12</span></div>
+        </article>
+
+        <article class="demo-card mainline-card">
+          <div class="card-head"><span>主线识别</span><small>板块 + 涨停集群</small></div>
+          <div class="mainline-list">
+            <button type="button"><b>通信</b><span>+2.36%</span><small>中嘉博创 · 5日 +6.8%</small></button>
+            <button type="button"><b>煤炭</b><span>+2.35%</span><small>昊华能源 · 5日 +4.2%</small></button>
+            <button type="button"><b>石油石化</b><span>+1.77%</span><small>ST沈化 · 5日 +3.1%</small></button>
+            <button type="button"><b>有色金属</b><span>+1.75%</span><small>盛达资源 · 5日 +2.7%</small></button>
+          </div>
+          <div class="tag-row"><span>涨停集群</span><em>通信 <b>8</b></em><em>煤炭 <b>5</b></em><em>石油 <b>4</b></em></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="screener" class="demo-section" aria-labelledby="screener-title">
+      <div class="section-heading"><div><span class="section-index">02</span><h2 id="screener-title">策略选股</h2></div><p>一次性扫描，不创建监控、不推送、不下单。</p></div>
+      <div class="demo-grid screener-grid">
+        <article class="demo-card screener-card">
+          <div class="card-head"><span>运行一次选股</span><small>市场成交额前 100</small></div>
+          <div class="rule-grid">
+            <label><input type="checkbox" checked> 放量突破</label>
+            <label><input type="checkbox" checked> 均线多头</label>
+            <label><input type="checkbox" checked> 多因子动量</label>
+            <label><input type="checkbox" checked> 沪深300在60日线上方</label>
+          </div>
+          <button class="primary-button" type="button" data-run-screener>运行选股 <svg><use href="#i-arrow"/></svg></button>
+          <p class="demo-note" data-screener-status>选择规则后运行一次扫描。结果只用于研究。</p>
+          <div class="screener-results" data-screener-results hidden>
+            <button type="button"><b>中嘉博创 <small>SZ000889</small></b><span>+2.36%</span><em>放量突破 · 均线多头</em></button>
+            <button type="button"><b>昊华能源 <small>SH601101</small></b><span>+2.35%</span><em>多因子动量</em></button>
+            <button type="button"><b>盛达资源 <small>SZ000603</small></b><span>+1.75%</span><em>放量突破</em></button>
+          </div>
+        </article>
+
+        <article class="demo-card screener-side">
+          <div class="card-head"><span>为什么是这三只</span><small>可解释候选</small></div>
+          <div class="reason-list">
+            <div><b>中嘉博创</b><p>收盘突破前 20 日高点，量比 2.4，距 20 日线 4.2%。</p><span>通信 · 主板</span></div>
+            <div><b>昊华能源</b><p>20 日与 60 日动量为正，价格在 60 日线上方。</p><span>煤炭 · 主板</span></div>
+            <div><b>盛达资源</b><p>5/10/20/60 日均线多头排列，量比 1.8。</p><span>有色 · 主板</span></div>
+          </div>
+          <p class="demo-note">因子排名只说明筛选依据，单靠入选因子池不等同于买点。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="monitor" class="demo-section" aria-labelledby="monitor-title">
+      <div class="section-heading"><div><span class="section-index">03</span><h2 id="monitor-title">监控</h2></div><p>因子/策略 → 信号 → 仿真 → 推送。</p></div>
+      <div class="demo-grid monitor-grid">
+        <article class="demo-card monitor-card">
+          <div class="card-head"><span>信号与推送</span><small>今日 3 条 · 已去重</small></div>
+          <div class="signal-list">
+            <button type="button" data-signal><b>中嘉博创 <small>SZ000889</small></b><span>放量突破</span><em>待推送</em></button>
+            <button type="button" data-signal><b>昊华能源 <small>SH601101</small></b><span>均线多头</span><em>待推送</em></button>
+            <button type="button" data-signal><b>盛达资源 <small>SZ000603</small></b><span>多因子动量</span><em>已推送</em></button>
+          </div>
+          <button class="ghost-button" type="button" data-push-all>推送全部信号</button>
+        </article>
+
+        <article class="demo-card monitor-config">
+          <div class="card-head"><span>监控配置</span><small>已保存</small></div>
+          <div class="config-row"><span>范围</span><b>动量因子 Top30</b></div>
+          <div class="config-row"><span>触发策略</span><b>放量突破 + 均线多头</b></div>
+          <div class="config-row"><span>时间窗</span><b>09:25–15:10</b></div>
+          <div class="config-row"><span>推送</span><b>PushPlus 已配置</b></div>
+          <button class="ghost-button" type="button" data-open-monitor>打开完整监控</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="paper" class="demo-section" aria-labelledby="paper-title">
+      <div class="section-heading"><div><span class="section-index">04</span><h2 id="paper-title">仿真盘</h2></div><p>信号可以先验证，再决定是否继续研究。</p></div>
+      <div class="demo-grid paper-grid">
+        <article class="demo-card paper-card">
+          <div class="card-head"><span>A 股观察仓</span><small>纸面模拟 · 不连接真实交易</small></div>
+          <div class="paper-metrics"><div><span>总资产</span><b>¥1,028,460</b><em>+2.85%</em></div><div><span>可用</span><b>¥728,460</b></div><div><span>持仓</span><b>3 只</b></div></div>
+          <div class="position-list"><div><b>中嘉博创</b><span>100 股</span><em>+3.20%</em></div><div><b>昊华能源</b><span>100 股</span><em>+1.80%</em></div></div>
+          <button class="primary-button" type="button" data-simulate>仿真并推送回执 <svg><use href="#i-arrow"/></svg></button>
+          <p class="demo-note" data-paper-status>当前信号尚未提交仿真委托。</p>
+        </article>
+
+        <article class="demo-card paper-side">
+          <div class="card-head"><span>风险护栏</span><small>已启用</small></div>
+          <div class="risk-row"><span>单标的仓位</span><b>20%</b><i><em style="width:35%"></em></i></div>
+          <div class="risk-row"><span>总仓位</span><b>60%</b><i><em style="width:45%"></em></i></div>
+          <div class="risk-row"><span>最大回撤</span><b>8%</b><i><em style="width:22%"></em></i></div>
+          <p class="demo-note">仿真只使用公开快照价撮合，费用、滑点和 T+1 规则与纸面账户一致。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="review" class="demo-section" aria-labelledby="review-title">
+      <div class="section-heading"><div><span class="section-index">05</span><h2 id="review-title">AI 复盘</h2></div><p>先把事实整理好，再让智能体补充解释。</p></div>
+      <article class="demo-card review-card">
+        <div class="review-copy"><span class="demo-eyebrow">REVIEW OUTLINE / 2026-11-27</span><h3>今天的市场，应该怎么复盘？</h3><p>指数震荡，通信、煤炭、石油石化形成局部主线；涨停 65 家、跌停 5 家，广度偏弱但情绪未失控。</p><button class="primary-button" type="button" data-review>生成复盘提纲 <svg><use href="#i-sparkles"/></svg></button><p class="demo-note" data-review-status>点击后生成结构化提纲，可复制到对话中继续研究。</p></div>
+        <div class="review-list" data-review-output hidden><div><b>1. 市场阶段</b><p>结构性强，趋势和广度没有同步走强。</p></div><div><b>2. 主线与分歧</b><p>通信、煤炭、石油石化领涨，需观察持续性和轮动。</p></div><div><b>3. 明日观察</b><p>指数能否守住 20 日线、涨停晋级率、成交额是否放大。</p></div><div><b>4. 风险边界</b><p>公开快照可能延迟；不把单日脉冲当成趋势。</p></div></div>
+      </article>
+    </section>
+
+    <footer class="demo-footer"><span>GuGu ai · 固定示例数据 · 非实时行情 · 不构成投资建议</span><a href="index.html">返回官网 ↗</a></footer>
+  </main>
+
+  <div class="command-overlay" data-command-overlay hidden>
+    <section class="command-panel" role="dialog" aria-modal="true" aria-label="全局命令面板">
+      <div class="command-input"><svg><use href="#i-search"/></svg><input data-command-input placeholder="搜索功能、标的或最近会话…" aria-label="搜索功能、标的或最近会话"><kbd>Esc</kbd></div>
+      <div class="command-list" data-command-list>
+        <button type="button" data-command-action="market"><span>市场阶段</span><small>打开市场面板</small><b>↵</b></button>
+        <button type="button" data-command-action="screener"><span>策略选股</span><small>运行一次扫描</small><b>↵</b></button>
+        <button type="button" data-command-action="monitor"><span>监控</span><small>查看信号与推送</small><b>↵</b></button>
+        <button type="button" data-command-action="paper"><span>仿真盘</span><small>验证委托与回执</small><b>↵</b></button>
+        <button type="button" data-command-action="review"><span>AI 复盘</span><small>生成复盘提纲</small><b>↵</b></button>
+      </div>
+      <div class="command-footer"><span><kbd>↑</kbd><kbd>↓</kbd> 选择</span><span><kbd>Enter</kbd> 打开</span><span><kbd>Esc</kbd> 关闭</span></div>
+    </section>
+  </div>
+</body>
+</html>
